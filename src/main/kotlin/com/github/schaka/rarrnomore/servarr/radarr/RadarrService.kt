@@ -27,7 +27,7 @@ class RadarrService(
             ?: throw IllegalStateException("Torrent with hash ${info.hash} not found in queue")
 
         log.info("Found torrent {} (id: {}) at indexer {} with rar files - deleting.",
-            info.torrentName, itemToDelete.id, itemToDelete.indexer)
+            info.torrentName, itemToDelete.id, info.indexer)
         log.trace("Rar files found in deleted torrent {}: {}", info.torrentName, info.filenames)
 
         client.delete("/queue/{id}?removeFromClient=true&blocklist=true", itemToDelete.id)
