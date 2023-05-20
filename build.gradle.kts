@@ -86,11 +86,13 @@ extra {
     project.extra["build.user"] = build.userName()
 
     val containerImageName = "schaka/${project.name}"
-    val containerImageTagVersion = if (branch == "main") shortCommit else branch
-    val containerImageTags = if (branch == "main") setOf(containerImageTagVersion, "latest") else setOf(containerImageTagVersion)
+    val containerImageTags = mutableSetOf(shortCommit, branch)
+    if (branch == "main") {
+        containerImageTags.add("latest")
+    }
 
     project.extra["docker.image.name"] = containerImageName
-    project.extra["docker.image.version"] = containerImageTagVersion
+    project.extra["docker.image.version"] = branch
     project.extra["docker.image.source"] = build.projectSourceRoot()
     project.extra["docker.image.tags"] = containerImageTags
 
