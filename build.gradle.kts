@@ -23,6 +23,9 @@ repositories {
     mavenCentral()
 }
 
+// set project version to short commit hash automatically
+project.version = getBuild().commitHash().take(8)
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -66,27 +69,27 @@ tasks.withType<Test> {
 
 configure<VersioningExtension> {
     /**
-     * Add GitLab CI branch name environment variable
+     * Add GitHub CI branch name environment variable
      */
-    branchEnv = listOf("CI_COMMIT_REF_NAME")
+    branchEnv = listOf("GITHUB_REF_NAME")
 }
 
 extra {
     val build = getBuild()
     val versioning: VersioningExtension = extensions.getByName<VersioningExtension>("versioning")
+    val branch = versioning.info.branch
+    val shortCommit = versioning.info.commit.take(8)
 
     project.extra["build.date-time"] = build.buildDateAndTime
     project.extra["build.date"] = build.formattedBuildDate()
     project.extra["build.time"] = build.formattedBuildTime()
     project.extra["build.revision"] = versioning.info.commit
-    // We use the first 8 characters here to match GitLab's variable 'CI_COMMIT_SHORT_SHA'.
-    // The Git client in the versioning plugin only provides the first 7 characters.
-    project.extra["build.revision.abbreviated"] = versioning.info.commit.take(8)
-    project.extra["build.branch"] = versioning.info.branch
+    project.extra["build.revision.abbreviated"] = shortCommit
+    project.extra["build.branch"] = branch
     project.extra["build.user"] = build.userName()
 
     val containerImageBaseName = build.containerImageBaseName()
-    val normalizedBranchName = (project.extra["build.branch"] as String).replace("/", "__")
+    val normalizedBranchName = branch.replace("/", "__")
     val containerImageName = "${containerImageBaseName}/${normalizedBranchName}"
     val containerImageTagVersion = project.version as String
     val containerImageTagLatest = "latest"
@@ -96,12 +99,13 @@ extra {
     project.extra["docker.image.source"] = build.projectSourceRoot()
     project.extra["docker.image.tags"] = setOf(containerImageTagVersion, containerImageTagLatest)
 
-    System.out.println(project.extra)
 }
 
 jib {
     to {
-        image = "docker.io/schaka/rarrnomore"
+        image = "docker.io/${project.extra["docker.image.name"]}"
+        tags = project.extra["docker.image.tags"] as Set<String>
+
         auth {
             username = System.getenv("DOCKERHUB_USER")
             password = System.getenv("DOCKERHUB_PASSWORD")
