@@ -51,17 +51,8 @@ class Build(private val project: Project) {
         return getenv("GITHUB_SHA") ?: "local"
     }
 
-    /**
-     * @return the address of the project’s Container Registry.
-     *
-     * Only available if the Container Registry is enabled for the project.
-     *
-     * If the variable is not set, **`schaka`** is used.
-     */
     fun containerImageBaseName(): String {
-        val baseImageName = getenv("CI_REGISTRY_IMAGE") ?: "schaka"
-
-        return "${baseImageName}/${project.name}"
+        return "schaka/${project.name}"
     }
 
     /**
