@@ -2,6 +2,7 @@ import com.google.cloud.tools.jib.api.buildplan.ImageFormat
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import net.nemerosa.versioning.VersioningExtension
+import org.springframework.boot.gradle.dsl.SpringBootExtension
 
 plugins {
 
@@ -16,9 +17,6 @@ plugins {
     kotlin("plugin.spring") version "1.8.21"
 
 }
-
-group = "com.github.schaka.rarrnomore"
-version = "1.0.0b"
 
 repositories {
     gradlePluginPortal()
@@ -38,10 +36,13 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "18"
+configure<SpringBootExtension> {
+    buildInfo()
+}
+
+configure<IdeaModel> {
+    module {
+        inheritOutputDirs = true
     }
 }
 
@@ -49,6 +50,13 @@ kotlin {
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(18))
         vendor.set(JvmVendorSpec.ADOPTIUM)
+    }
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict")
+        jvmTarget = "18"
     }
 }
 
@@ -61,13 +69,6 @@ configure<VersioningExtension> {
      * Add GitLab CI branch name environment variable
      */
     branchEnv = listOf("CI_COMMIT_REF_NAME")
-}
-
-
-configure<IdeaModel> {
-    module {
-        inheritOutputDirs = true
-    }
 }
 
 extra {
