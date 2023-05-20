@@ -55,10 +55,10 @@ class Build(private val project: Project) {
      *
      * Only available if the Container Registry is enabled for the project.
      *
-     * If the variable is not set, **`adsoul`** is used.
+     * If the variable is not set, **`rarrnomore`** is used.
      */
     fun containerImageBaseName(): String {
-        val baseImageName = getenv("CI_REGISTRY_IMAGE") ?: "adsoul"
+        val baseImageName = getenv("CI_REGISTRY_IMAGE") ?: "rarrnomore"
 
         return "${baseImageName}/${project.name}"
     }
@@ -71,7 +71,7 @@ class Build(private val project: Project) {
      * If the variable is not set, an empty string is used.
      */
     fun containerRegistryUser(): String {
-        return getenv("CI_REGISTRY_USER") ?: ""
+        return getenv("DOCKERHUB_USER") ?: ""
     }
 
     /**
@@ -84,7 +84,7 @@ class Build(private val project: Project) {
      * If the variable is not set, an empty string is used.
      */
     fun containerRegistryPassword(): String {
-        return getenv("CI_REGISTRY_PASSWORD") ?: ""
+        return getenv("DOCKERHUB_PASSWORD") ?: ""
     }
 
     /**
@@ -132,7 +132,7 @@ class Build(private val project: Project) {
      * @return a token to authenticate with certain API endpoints. The token is valid as long as the job is running.
      */
     fun jobToken(): String? {
-        return getenv("CI_JOB_TOKEN")
+        return getenv("GITHUB_TOKEN")
     }
 
     /**

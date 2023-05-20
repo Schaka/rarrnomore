@@ -66,7 +66,7 @@ fun Project.getSourceSetContainer(): SourceSetContainer {
 }
 
 /**
- * @return the special information of this adSoul build.
+ * @return the special information of this build.
  */
 fun Project.getBuild(): Build {
     val build: Build
