@@ -1,15 +1,19 @@
 package com.github.schaka.rarrnomore.torrent.qbit
 
 import com.github.schaka.rarrnomore.hooks.TorrentInfo
+import com.github.schaka.rarrnomore.torrent.TorrentClientType
 import com.github.schaka.rarrnomore.torrent.TorrentHashNotFoundException
 import com.github.schaka.rarrnomore.torrent.TorrentService
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
+import org.springframework.util.CollectionUtils
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import kotlin.IllegalStateException
 
+@ConditionalOnProperty("clients.torrent.type", havingValue = "QBITTORRENT")
 @Service
 class QBittorrentService(
     @QBittorrent
@@ -25,7 +29,7 @@ class QBittorrentService(
             info.hash
         )
 
-        if(files.body?.isEmpty() == true) {
+        if (CollectionUtils.isEmpty(files.body)) {
             throw TorrentHashNotFoundException("Torrent (${info.torrentName}) (${info.hash}) not in torrent client or files cannot be read")
         }
 
@@ -39,7 +43,8 @@ class QBittorrentService(
         client.postForEntity(
             "/torrents/resume",
             map,
-            String::class.java)
+            String::class.java
+        )
     }
 
 
