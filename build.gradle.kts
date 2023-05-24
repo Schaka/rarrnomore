@@ -48,15 +48,20 @@ configure<IdeaModel> {
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(18))
+        languageVersion.set(JavaLanguageVersion.of(20))
         vendor.set(JvmVendorSpec.ADOPTIUM)
     }
+}
+
+tasks.withType<JavaCompile> {
+    sourceCompatibility = JavaVersion.VERSION_18.toString()
+    targetCompatibility = JavaVersion.VERSION_18.toString()
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "18"
+        jvmTarget = JavaVersion.VERSION_18.toString()
     }
 }
 
@@ -109,7 +114,7 @@ jib {
         }
     }
     from {
-        image = "eclipse-temurin:18-jre-jammy"
+        image = "eclipse-temurin:20-jre-jammy"
         auth {
             username = System.getenv("DOCKERHUB_USER")
             password = System.getenv("DOCKERHUB_PASSWORD")

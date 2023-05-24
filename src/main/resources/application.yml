@@ -10,7 +10,7 @@ clients:
     api-key: "cd0912f129d344g9b69bb20d49fcbe49"
   torrent:
     type: QBITTORRENT
-    name: qBitorrent
+    name: qBittorrent
     url: "http://localhost:8080"
     username: admin
     password: adminadmin
