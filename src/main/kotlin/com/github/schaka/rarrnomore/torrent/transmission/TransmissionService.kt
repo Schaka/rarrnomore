@@ -31,11 +31,11 @@ class TransmissionService(
         )
 
         val files = fileResponse.body?.arguments?.torrents
-        if (CollectionUtils.isEmpty(files)) {
+        if (files.isNullOrEmpty()) {
             throw TorrentHashNotFoundException("Torrent (${info.torrentName}) (${info.hash}) not in torrent client or files cannot be read")
         }
 
-        info.addFiles(files!!.flatMap { it.files.map { it.name } })
+        info.addFiles(files.flatMap { it.files.map { it.name } })
         return info
     }
 
