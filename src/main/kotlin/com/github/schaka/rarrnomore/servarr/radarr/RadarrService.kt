@@ -17,7 +17,6 @@ class RadarrService(
 ) : ServarrService {
 
     companion object {
-        @Suppress("JAVA_CLASS_ON_COMPANION")
         @JvmStatic
         private val log = LoggerFactory.getLogger(javaClass.enclosingClass)
     }
