@@ -5,11 +5,10 @@ Disclaimer: I am not responsible for you deleting any torrents. Please test your
 
 ### Notes
 - Radarr has only been tested briefly
-- currently, only qBittorrent is supported
+- currently, only qBittorrent and Transmission are supported
 
 ### Planned
 - search `Sample` folder and exclude it from leeching/seeding
-- support for Transmission
 - some unit tests
 - (optional) other file types can be added to the exclusion list
 
