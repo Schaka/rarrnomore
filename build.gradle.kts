@@ -1,24 +1,27 @@
 import com.google.cloud.tools.jib.api.buildplan.ImageFormat
+import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import net.nemerosa.versioning.VersioningExtension
 
 plugins {
-    id("maven-publish")
 
+    id("idea")
     id("org.springframework.boot") version "3.0.6"
     id("io.spring.dependency-management") version "1.1.0"
     id("org.graalvm.buildtools.native") version "0.9.20"
     id("com.google.cloud.tools.jib") version "3.3.2"
+    id("net.nemerosa.versioning") version "2.8.2"
 
-    kotlin("jvm") version "1.8.20"
-    kotlin("plugin.spring") version "1.8.20"
+    kotlin("jvm") version "1.8.21"
+    kotlin("plugin.spring") version "1.8.21"
 
 }
 
-group = "com.github.schaka."
-version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_18
+group = "com.github.schaka.rarrnomore"
+version = "1.0.0b"
 
 repositories {
+    gradlePluginPortal()
     mavenCentral()
 }
 
@@ -42,8 +45,57 @@ tasks.withType<KotlinCompile> {
     }
 }
 
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(18))
+        vendor.set(JvmVendorSpec.ADOPTIUM)
+    }
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+configure<VersioningExtension> {
+    /**
+     * Add GitLab CI branch name environment variable
+     */
+    branchEnv = listOf("CI_COMMIT_REF_NAME")
+}
+
+
+configure<IdeaModel> {
+    module {
+        inheritOutputDirs = true
+    }
+}
+
+extra {
+    val build = getBuild()
+    val versioning: VersioningExtension = extensions.getByName<VersioningExtension>("versioning")
+
+    project.extra["build.date-time"] = build.buildDateAndTime
+    project.extra["build.date"] = build.formattedBuildDate()
+    project.extra["build.time"] = build.formattedBuildTime()
+    project.extra["build.revision"] = versioning.info.commit
+    // We use the first 8 characters here to match GitLab's variable 'CI_COMMIT_SHORT_SHA'.
+    // The Git client in the versioning plugin only provides the first 7 characters.
+    project.extra["build.revision.abbreviated"] = versioning.info.commit.take(8)
+    project.extra["build.branch"] = versioning.info.branch
+    project.extra["build.user"] = build.userName()
+
+    val containerImageBaseName = build.containerImageBaseName()
+    val normalizedBranchName = (project.extra["build.branch"] as String).replace("/", "__")
+    val containerImageName = "${containerImageBaseName}/${normalizedBranchName}"
+    val containerImageTagVersion = project.version as String
+    val containerImageTagLatest = "latest"
+
+    project.extra["docker.image.name"] = containerImageName
+    project.extra["docker.image.version"] = containerImageTagVersion
+    project.extra["docker.image.source"] = build.projectSourceRoot()
+    project.extra["docker.image.tags"] = setOf(containerImageTagVersion, containerImageTagLatest)
+
+    System.out.println(project.extra)
 }
 
 jib {
@@ -67,5 +119,21 @@ jib {
         ports = listOf("8978")
         format = ImageFormat.Docker
         volumes = listOf("/config")
+
+        labels.set(
+            mapOf(
+                "org.opencontainers.image.created" to "${project.extra["build.date"]}T${project.extra["build.time"]}",
+                "org.opencontainers.image.revision" to project.extra["build.revision"] as String,
+                "org.opencontainers.image.version" to project.version as String,
+                "org.opencontainers.image.title" to project.name,
+                "org.opencontainers.image.authors" to "Schaka <schaka@github.com>",
+                "org.opencontainers.image.source" to project.extra["docker.image.source"] as String,
+                "org.opencontainers.image.description" to project.description,
+            )
+        )
+
+
+        // Exclude all "developmentOnly" dependencies, e.g. Spring devtools.
+        configurationName.set("productionRuntimeClasspath")
     }
 }
