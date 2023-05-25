@@ -92,7 +92,7 @@ class TorrentManager(
     private fun rejectOrResumeTorrent(torrentInfo: TorrentInfo, servarrService: ServarrService) {
         val info = torrentService.enrichTorrentInfo(torrentInfo)
 
-        if (!torrentContainsRar(info.filenames)) {
+        if (torrentContainsRar(info.filenames)) {
             // reject in Sonarr queue and delete
             servarrService.deleteAndBlacklist(torrentInfo)
             return
