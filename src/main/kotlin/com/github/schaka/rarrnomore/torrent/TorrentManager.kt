@@ -55,10 +55,10 @@ class TorrentManager(
         }
     }
 
-    private fun needToRetry(deleteItem: TorrentQueueItem): Boolean {
-        return (deleteItem.attempts.get() == 0 && deleteItem.lastAttempt.plusMinutes(1).isBefore(LocalDateTime.now()))
+    private fun needToRetry(queueItem: TorrentQueueItem): Boolean {
+        return (queueItem.attempts.get() == 0 && queueItem.lastAttempt.plusMinutes(1).isBefore(LocalDateTime.now()))
                 ||
-                (deleteItem.attempts.get() > 0 && deleteItem.lastAttempt.plusMinutes(5).isBefore(LocalDateTime.now()))
+                (queueItem.attempts.get() > 0 && queueItem.lastAttempt.plusMinutes(5).isBefore(LocalDateTime.now()))
     }
 
 
@@ -89,15 +89,16 @@ class TorrentManager(
         queueItem.lastException = exception
     }
 
-    private fun rejectOrResumeTorrent(torrentInfo: TorrentInfo, servarrService: ServarrService) {
-        val info = torrentService.enrichTorrentInfo(torrentInfo)
+    private fun rejectOrResumeTorrent(info: TorrentInfo, servarrService: ServarrService) {
+        val info = torrentService.enrichTorrentInfo(info)
 
         if (torrentContainsRar(info.filenames)) {
             // reject in Sonarr queue and delete
-            servarrService.deleteAndBlacklist(torrentInfo)
+            servarrService.deleteAndBlacklist(info)
             return
         }
 
+        log.info("Torrent (${info.torrentName}) didn't contain rar files - resuming!")
         torrentService.resumeTorrent(info.hash)
     }
 }

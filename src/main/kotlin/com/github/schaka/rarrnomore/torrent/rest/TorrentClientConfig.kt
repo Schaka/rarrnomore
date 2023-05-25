@@ -1,6 +1,7 @@
 package com.github.schaka.rarrnomore.torrent.rest
 
 import com.github.schaka.rarrnomore.torrent.qbit.QBittorrent
+import com.github.schaka.rarrnomore.torrent.qbit.QbitAuthInterceptor
 import org.slf4j.LoggerFactory.getLogger
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.web.client.RestTemplateBuilder
@@ -26,25 +27,9 @@ class TorrentClientConfig {
     @QBittorrent
     @Bean
     fun qBittorrentTemplate(builder: RestTemplateBuilder, properties: TorrentClientProperties): RestTemplate {
-        val loginCookie = attemptAuthentication(properties)
         return builder
             .rootUri("${properties.url}/api/v2")
-            .defaultHeader(COOKIE, loginCookie)
+            .interceptors(listOf(QbitAuthInterceptor(properties)))
             .build()
-    }
-
-    private fun attemptAuthentication(properties: TorrentClientProperties): String {
-        try {
-            val login = RestTemplate()
-            val map = LinkedMultiValueMap<String, Any>()
-            map.add("username", properties.username)
-            map.add("password", properties.password)
-            val loginID = login.postForEntity("${properties.url}/api/v2/auth/login", HttpEntity(map), String::class.java)
-            return loginID.headers[SET_COOKIE]?.find{ s -> s.contains("SID") } !!
-        } catch (e: Exception) {
-            log.error("Error connecting to torrent client", e)
-        }
-
-        throw IllegalStateException("Can't start application, no torrent client connection possible");
     }
 }
