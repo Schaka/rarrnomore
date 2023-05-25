@@ -7,7 +7,7 @@ data class SonarQueueItem(
     val seriesId: Int,
     val episodeId: Int,
     val seasonNumber: Int,
-    val downloadClient: String,
+    val downloadClient: String?,
     @JsonProperty("downloadId")
     var hash: String,
     val indexer: String?,
