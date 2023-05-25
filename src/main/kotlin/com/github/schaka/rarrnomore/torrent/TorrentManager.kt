@@ -15,7 +15,6 @@ class TorrentManager(
 ) {
 
     companion object {
-        @JvmStatic
         private val log = LoggerFactory.getLogger(this::class.java.enclosingClass)
     }
 

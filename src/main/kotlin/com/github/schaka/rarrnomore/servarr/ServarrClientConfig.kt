@@ -15,7 +15,6 @@ import org.springframework.web.client.RestTemplate
 class ServarrClientConfig {
 
     companion object {
-        @JvmStatic
         private val log = LoggerFactory.getLogger(this::class.java.enclosingClass)
     }
 
