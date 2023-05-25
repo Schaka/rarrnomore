@@ -40,10 +40,7 @@ class HookController(
         }
 
         log.trace("{}", request)
-        GlobalScope.launch {
-            delay(5000)
-            torrentManager.rejectOrResumeTorrent(toTorrentInfo(request), sonarrService)
-        }
+        torrentManager.processGrab(toTorrentInfo(request), sonarrService)
 
         return ResponseEntity.noContent().build()
     }
@@ -56,16 +53,14 @@ class HookController(
         }
 
         log.trace("{}", request)
-        GlobalScope.launch {
-            delay(5000)
-            torrentManager.rejectOrResumeTorrent(toTorrentInfo(request), radarrService)
-        }
+        torrentManager.processGrab(toTorrentInfo(request), radarrService)
+
         return ResponseEntity.noContent().build()
     }
 
     fun validateRequest(request: WebHookRequest): Boolean {
 
-        if(request.eventType != "Grab") {
+        if (request.eventType != "Grab") {
             log.warn("Received request not applicable for event type 'Grab': {}", request)
             return false
         }
@@ -75,12 +70,12 @@ class HookController(
             return false
         }
 
-        if(torrentClientProperties.type.servarrName != request.downloadClientType) {
+        if (torrentClientProperties.type.servarrName != request.downloadClientType) {
             log.warn("Client type doesn't match: {}", request)
             return false
         }
 
-        if(torrentClientProperties.name != request.downloadClient) {
+        if (torrentClientProperties.name != request.downloadClient) {
             log.warn("Client name doesn't match: {}", request)
             return false
         }
@@ -89,10 +84,22 @@ class HookController(
     }
 
     fun toTorrentInfo(request: SonarrWebHookRequest): TorrentInfo {
-        return TorrentInfo(request.hash?.lowercase()!!, request.downloadClientType!!, request.downloadClient!!, request.release!!.indexer, request.release!!.releaseTitle)
+        return TorrentInfo(
+            request.hash?.lowercase()!!,
+            request.downloadClientType!!,
+            request.downloadClient!!,
+            request.release!!.indexer,
+            request.release!!.releaseTitle
+        )
     }
 
     fun toTorrentInfo(request: RadarrWebHookRequest): TorrentInfo {
-        return TorrentInfo(request.hash?.lowercase()!!, request.downloadClientType!!, request.downloadClient!!, request.release!!.indexer, request.release!!.releaseTitle)
+        return TorrentInfo(
+            request.hash?.lowercase()!!,
+            request.downloadClientType!!,
+            request.downloadClient!!,
+            request.release!!.indexer,
+            request.release!!.releaseTitle
+        )
     }
 }

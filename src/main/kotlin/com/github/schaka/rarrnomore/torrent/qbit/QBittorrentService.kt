@@ -1,6 +1,7 @@
 package com.github.schaka.rarrnomore.torrent.qbit
 
 import com.github.schaka.rarrnomore.hooks.TorrentInfo
+import com.github.schaka.rarrnomore.torrent.TorrentHashNotFoundException
 import com.github.schaka.rarrnomore.torrent.TorrentService
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
@@ -25,7 +26,7 @@ class QBittorrentService(
         )
 
         if(files.body?.isEmpty() == true) {
-            throw IllegalStateException("Torrent not in torrent client or empty")
+            throw TorrentHashNotFoundException("Torrent (${info.torrentName}) (${info.hash}) not in torrent client or files cannot be read")
         }
 
         info.addFiles(files.body!!.map(QbitFileResponse::name))
