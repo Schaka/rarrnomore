@@ -10,9 +10,14 @@ repositories {
     mavenCentral()
 }
 
+tasks.withType<JavaCompile> {
+    sourceCompatibility = JavaVersion.VERSION_18.toString()
+    targetCompatibility = JavaVersion.VERSION_18.toString()
+}
+
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "18"
+        jvmTarget = JavaVersion.VERSION_18.toString()
     }
 }
