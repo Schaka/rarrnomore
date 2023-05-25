@@ -4,6 +4,7 @@ import com.github.schaka.rarrnomore.servarr.radarr.Radarr
 import com.github.schaka.rarrnomore.servarr.radarr.RadarrProperties
 import com.github.schaka.rarrnomore.servarr.sonarr.Sonarr
 import com.github.schaka.rarrnomore.servarr.sonarr.SonarrProperties
+import org.slf4j.LoggerFactory
 import org.slf4j.LoggerFactory.getLogger
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
@@ -15,7 +16,7 @@ class ServarrClientConfig {
 
     companion object {
         @JvmStatic
-        private val log = getLogger(javaClass.enclosingClass)
+        private val log = LoggerFactory.getLogger(this::class.java.enclosingClass)
     }
 
     @Radarr

@@ -18,7 +18,7 @@ class RadarrService(
 
     companion object {
         @JvmStatic
-        private val log = LoggerFactory.getLogger(javaClass.enclosingClass)
+        private val log = LoggerFactory.getLogger(this::class.java.enclosingClass)
     }
 
     override fun deleteAndBlacklist(info: TorrentInfo) {
