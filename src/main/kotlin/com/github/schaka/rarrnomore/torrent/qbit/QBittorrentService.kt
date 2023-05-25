@@ -1,17 +1,15 @@
 package com.github.schaka.rarrnomore.torrent.qbit
 
 import com.github.schaka.rarrnomore.hooks.TorrentInfo
-import com.github.schaka.rarrnomore.torrent.TorrentClientType
 import com.github.schaka.rarrnomore.torrent.TorrentHashNotFoundException
 import com.github.schaka.rarrnomore.torrent.TorrentService
+import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
-import org.springframework.util.CollectionUtils
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
-import kotlin.IllegalStateException
 
 @ConditionalOnProperty("clients.torrent.type", havingValue = "QBITTORRENT")
 @Service
@@ -19,6 +17,10 @@ class QBittorrentService(
     @QBittorrent
     private var client: RestTemplate
 ) : TorrentService {
+
+    companion object {
+        private val log = LoggerFactory.getLogger(this::class.java.enclosingClass)
+    }
 
     override fun enrichTorrentInfo(info: TorrentInfo): TorrentInfo {
         val files = client.exchange(
@@ -29,11 +31,15 @@ class QBittorrentService(
             info.hash
         )
 
-        if (CollectionUtils.isEmpty(files.body)) {
+        if (files.body.isNullOrEmpty()) {
             throw TorrentHashNotFoundException("Torrent (${info.torrentName}) (${info.hash}) not in torrent client or files cannot be read")
         }
 
         info.addFiles(files.body!!.map(QbitFileResponse::name))
+        log.info(
+            "Found torrent {} (hash: {}) at indexer {} with files ({}).",
+            info.torrentName, info.hash, info.indexer, info.filenames
+        )
         return info
     }
 
