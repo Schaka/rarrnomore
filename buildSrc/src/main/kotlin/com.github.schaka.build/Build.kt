@@ -43,11 +43,12 @@ class Build(private val project: Project) {
         return getenv("CI_MERGE_REQUEST_TARGET_BRANCH_NAME")
     }
 
-    /**
-     * @return the build number. Is locally always <code>1</code>.
-     */
-    fun buildNumber(): String {
-        return getenv("CI_JOB_ID") ?: "1"
+    fun branchName(): String {
+        return getenv("GITHUB_REF_NAME")
+    }
+
+    fun commitHash(): String {
+        return getenv("GITHUB_SHA") ?: "local"
     }
 
     /**
@@ -55,10 +56,10 @@ class Build(private val project: Project) {
      *
      * Only available if the Container Registry is enabled for the project.
      *
-     * If the variable is not set, **`rarrnomore`** is used.
+     * If the variable is not set, **`schaka`** is used.
      */
     fun containerImageBaseName(): String {
-        val baseImageName = getenv("CI_REGISTRY_IMAGE") ?: "rarrnomore"
+        val baseImageName = getenv("CI_REGISTRY_IMAGE") ?: "schaka"
 
         return "${baseImageName}/${project.name}"
     }
