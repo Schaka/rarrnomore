@@ -9,7 +9,6 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
-import org.springframework.util.CollectionUtils
 import org.springframework.web.client.RestTemplate
 
 @ConditionalOnProperty("clients.torrent.type", havingValue = "TRANSMISSION")

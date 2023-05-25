@@ -22,7 +22,8 @@ class RadarrService(
 
     override fun deleteAndBlacklist(info: TorrentInfo) {
         val queue = client.getForEntity("/queue?includeUnknownSeriesItems=true", RadarrQueueList::class.java)
-        val itemToDelete = queue.body?.records?.find { it -> it.hash.lowercase() == info.hash.lowercase() }
+        log.trace("Queue items found: {}", queue.body?.records)
+        val itemToDelete = queue.body?.records?.find { it.hash.lowercase() == info.hash.lowercase() }
             ?: throw TorrentNotInQueueException("Torrent with hash ${info.hash} not found in queue")
 
         log.info(
