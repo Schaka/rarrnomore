@@ -51,10 +51,6 @@ class Build(private val project: Project) {
         return getenv("GITHUB_SHA") ?: "local"
     }
 
-    fun containerImageBaseName(): String {
-        return "schaka/${project.name}"
-    }
-
     /**
      * @return the username to push containers to the project’s GitLab Container Registry.
      *

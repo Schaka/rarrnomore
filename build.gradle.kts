@@ -23,9 +23,6 @@ repositories {
     mavenCentral()
 }
 
-// set project version to short commit hash automatically
-project.version = getBuild().commitHash().take(8)
-
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -88,16 +85,14 @@ extra {
     project.extra["build.branch"] = branch
     project.extra["build.user"] = build.userName()
 
-    val containerImageBaseName = build.containerImageBaseName()
-    val normalizedBranchName = branch.replace("/", "__")
-    val containerImageName = "${containerImageBaseName}/${normalizedBranchName}"
-    val containerImageTagVersion = project.version as String
-    val containerImageTagLatest = "latest"
+    val containerImageName = "schaka/${project.name}"
+    val containerImageTagVersion = if (branch == "main") shortCommit else branch
+    val containerImageTags = if (branch == "main") setOf(containerImageTagVersion, "latest") else setOf(containerImageTagVersion)
 
     project.extra["docker.image.name"] = containerImageName
     project.extra["docker.image.version"] = containerImageTagVersion
     project.extra["docker.image.source"] = build.projectSourceRoot()
-    project.extra["docker.image.tags"] = setOf(containerImageTagVersion, containerImageTagLatest)
+    project.extra["docker.image.tags"] = containerImageTags
 
 }
 
