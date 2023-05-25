@@ -25,7 +25,8 @@ If you cannot use Docker, you're out of luck for now.
 ### Setting up Docker
 - map /config from within the container to a host folder of your choice
 - within that host folder, put a copy of [application.yml](https://github.com/Schaka/rarrnomore/blob/main/src/main/resources/application.yml) from this repository
-- adjust said copy with your own info like API keys and your preferred port
+- choose either `QBITTORRENT` or `TRANSMISSION` (credentials not required for Transmission, if disabled)
+- adjust said copy with your own info like *arr API keys and your preferred port
 - forward the port you've chosen from your container to the host system
 
 **Important**: The `clients.torrent.name` property needs to exactly match the name you gave your client in Sonarr/Radarr, this is validated against web hook requests at runtime.
