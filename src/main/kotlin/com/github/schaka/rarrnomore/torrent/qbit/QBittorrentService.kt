@@ -28,7 +28,7 @@ class QBittorrentService(
             HttpMethod.GET,
             null,
             object : ParameterizedTypeReference<List<QbitFileResponse>>() {},
-            info.hash
+            info.hash.lowercase()
         )
 
         if (files.body.isNullOrEmpty()) {
