@@ -62,7 +62,7 @@ class HookController(
     fun validateRequest(request: WebHookRequest): Boolean {
 
         if (request.eventType != "Grab") {
-            log.warn("Received request not applicable for event type 'Grab': {}", request)
+            log.debug("Received request not applicable for event type 'Grab': {}", request)
             return false
         }
 

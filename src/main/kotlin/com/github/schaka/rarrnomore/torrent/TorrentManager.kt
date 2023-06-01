@@ -7,11 +7,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
+import java.util.concurrent.CopyOnWriteArrayList
 
 @Component
 class TorrentManager(
     private val torrentService: TorrentService,
-    private val torrentQueue: MutableList<TorrentQueueItem> = mutableListOf()
+    private val torrentQueue: MutableList<TorrentQueueItem> = CopyOnWriteArrayList()
 ) {
 
     companion object {
@@ -40,6 +41,7 @@ class TorrentManager(
             if (queueItem.attempts.get() >= 3) {
                 log.error("Processing torrent ${queueItem.torrentInfo.torrentName} failed", queueItem.lastException)
                 itemItr.remove()
+                continue
             }
 
             if (!needToRetry(queueItem)) {
@@ -65,15 +67,18 @@ class TorrentManager(
      */
     private fun tryToProcess(queueItem: TorrentQueueItem): Boolean {
         val servarrService = queueItem.servarrService
+        val torrentInfo = queueItem.torrentInfo
 
         try {
-            rejectOrResumeTorrent(queueItem.torrentInfo, servarrService)
+            log.trace("Attempting to reject or resume torrent ({}) ({})", torrentInfo.torrentName, torrentInfo.hash)
+            rejectOrResumeTorrent(torrentInfo, servarrService)
             return true // no exception, success!
         } catch (e: TorrentNotInQueueException) {
             increment(queueItem, e)
         } catch (e: TorrentHashNotFoundException) {
             increment(queueItem, e)
         } catch (e: Exception) {
+            log.error("Unexpected exception occurred, do not retry" , e)
             queueItem.lastException = e
             queueItem.attempts.set(3)
         }
