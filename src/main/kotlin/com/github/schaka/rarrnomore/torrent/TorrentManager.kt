@@ -33,14 +33,13 @@ class TorrentManager(
 
     @Scheduled(fixedDelay = 5000)
     fun processServarrQueue() {
-        val itemItr = torrentQueue.iterator()
-        while (itemItr.hasNext()) {
-            val queueItem = itemItr.next()
+        val toBeRemoved = mutableListOf<TorrentQueueItem>()
 
+        for (queueItem in torrentQueue) {
             // if 3 attempts have been made, abandon retries
             if (queueItem.attempts.get() >= 3) {
                 log.error("Processing torrent ${queueItem.torrentInfo.torrentName} failed", queueItem.lastException)
-                itemItr.remove()
+                toBeRemoved.add(queueItem)
                 continue
             }
 
@@ -49,10 +48,11 @@ class TorrentManager(
             }
 
             if (tryToProcess(queueItem)) {
-                itemItr.remove()
+                toBeRemoved.add(queueItem)
             }
-
         }
+
+        torrentQueue.removeAll(toBeRemoved)
     }
 
     private fun needToRetry(queueItem: TorrentQueueItem): Boolean {
