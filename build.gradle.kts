@@ -119,6 +119,16 @@ jib {
             username = System.getenv("DOCKERHUB_USER")
             password = System.getenv("DOCKERHUB_PASSWORD")
         }
+        platforms {
+            platform {
+                architecture = "amd64"
+                os = "linux"
+            }
+            platform {
+                architecture = "arm64"
+                os = "linux"
+            }
+        }
     }
     container {
         jvmFlags = listOf("-Dspring.config.additional-location=optional:file:/config/application.yaml", "-Xms512m")
