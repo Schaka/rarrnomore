@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class TorrentClientProperties(
     val type: TorrentClientType,
     val name: String,
+    val autoResume: Boolean = true,
     val url: String,
     val username: String,
     val password: String

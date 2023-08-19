@@ -11,6 +11,7 @@ clients:
   torrent:
     type: QBITTORRENT
     name: qBittorrent
+    auto-resume: true
     url: "http://localhost:8080"
     username: admin
     password: adminadmin

@@ -6,13 +6,6 @@ import org.springframework.http.*
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
-import org.springframework.util.LinkedMultiValueMap
-import org.springframework.web.client.ResponseErrorHandler
-import org.springframework.web.client.RestClientResponseException
-import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.UnknownContentTypeException
-import java.lang.Exception
-import java.time.LocalDateTime
 
 class TransmissionAuthHandler(
     val properties: TorrentClientProperties,

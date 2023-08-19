@@ -3,6 +3,7 @@ package com.github.schaka.rarrnomore.torrent
 import com.github.schaka.rarrnomore.hooks.TorrentInfo
 import com.github.schaka.rarrnomore.servarr.ServarrService
 import com.github.schaka.rarrnomore.servarr.TorrentNotInQueueException
+import com.github.schaka.rarrnomore.torrent.rest.TorrentClientProperties
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -12,6 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 @Component
 class TorrentManager(
     private val torrentService: TorrentService,
+    private val torrentClientProperties: TorrentClientProperties,
     private val torrentQueue: MutableList<TorrentQueueItem> = CopyOnWriteArrayList()
 ) {
 
@@ -78,7 +80,7 @@ class TorrentManager(
         } catch (e: TorrentHashNotFoundException) {
             increment(queueItem, e)
         } catch (e: Exception) {
-            log.error("Unexpected exception occurred, do not retry" , e)
+            log.error("Unexpected exception occurred, do not retry", e)
             queueItem.lastException = e
             queueItem.attempts.set(3)
         }
@@ -101,7 +103,9 @@ class TorrentManager(
             return
         }
 
-        log.info("Torrent (${info.torrentName}) didn't contain rar files - resuming!")
-        torrentService.resumeTorrent(info.hash)
+        if (torrentClientProperties.autoResume) {
+            log.info("Torrent (${info.torrentName}) didn't contain rar files - resuming!")
+            torrentService.resumeTorrent(info.hash)
+        }
     }
 }
