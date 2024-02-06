@@ -4,11 +4,9 @@ Disclaimer: I am not responsible for you deleting any torrents. Please test your
 **You need to set your torrent clients in Radarr and Sonarr to start new torrents in the paused state.**
 
 ### Notes
-- Radarr has only been tested briefly
 - currently, only qBittorrent and Transmission are supported
 
 ### Planned
-- search `Sample` folder and exclude it from leeching/seeding
 - some unit tests
 - (optional) other file types can be added to the exclusion list
 
