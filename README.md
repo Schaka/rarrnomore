@@ -16,7 +16,7 @@ If it finds a .rar or partial rar (.r01) file, it sends a request to your servar
 If no rar is found, it sends a request to your torrent client to resume the torrent, starting the download.
 
 ## Setup
-Currently, the code is only published as a docker image to [DockerHub](https://hub.docker.com/repository/docker/schaka/rarrnomore).
+Currently, the code is only published as a docker image to GitHub.
 If you cannot use Docker, you're out of luck for now.
 
 ### Setting up Docker
@@ -35,7 +35,7 @@ docker run
 --name='rarrnomore'
 -e HOST_CONTAINERNAME="rarrnomore"
 -p 8978:8978
--v '/mnt/user/appdata/rarrnomore/config':'/config':'rw' 'schaka/rarrnomore'
+-v '/mnt/user/appdata/rarrnomore/config':'/config':'rw' 'ghcr.io/schaka/rarrnomore'
 ```
 
 ### Setting up Unraid

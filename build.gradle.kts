@@ -7,14 +7,14 @@ import org.springframework.boot.gradle.dsl.SpringBootExtension
 plugins {
 
     id("idea")
-    id("org.springframework.boot") version "3.0.6"
-    id("io.spring.dependency-management") version "1.1.0"
-    id("org.graalvm.buildtools.native") version "0.9.20"
-    id("com.google.cloud.tools.jib") version "3.3.2"
+    id("org.springframework.boot") version "3.2.4"
+    id("io.spring.dependency-management") version "1.1.4"
+    id("com.google.cloud.tools.jib") version "3.4.2"
     id("net.nemerosa.versioning") version "2.8.2"
+    id("org.graalvm.buildtools.native") version "0.10.1"
 
-    kotlin("jvm") version "1.8.21"
-    kotlin("plugin.spring") version "1.8.21"
+    kotlin("jvm") version "1.9.23"
+    kotlin("plugin.spring") version "1.9.23"
 
 }
 
@@ -27,7 +27,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
@@ -48,20 +48,20 @@ configure<IdeaModel> {
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(20))
+        languageVersion.set(JavaLanguageVersion.of(21))
         vendor.set(JvmVendorSpec.ADOPTIUM)
     }
 }
 
 tasks.withType<JavaCompile> {
-    sourceCompatibility = JavaVersion.VERSION_18.toString()
-    targetCompatibility = JavaVersion.VERSION_18.toString()
+    sourceCompatibility = JavaVersion.VERSION_21.toString()
+    targetCompatibility = JavaVersion.VERSION_21.toString()
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = JavaVersion.VERSION_18.toString()
+        jvmTarget = JavaVersion.VERSION_21.toString()
     }
 }
 
@@ -105,16 +105,16 @@ extra {
 
 jib {
     to {
-        image = "docker.io/${project.extra["docker.image.name"]}"
+        image = "ghcr.io/${project.extra["docker.image.name"]}"
         tags = project.extra["docker.image.tags"] as Set<String>
 
         auth {
-            username = System.getenv("DOCKERHUB_USER")
-            password = System.getenv("DOCKERHUB_PASSWORD")
+            username = System.getenv("USERNAME")
+            password = System.getenv("GITHUB_TOKEN")
         }
     }
     from {
-        image = "eclipse-temurin:20-jre-jammy"
+        image = "eclipse-temurin:21-jre-jammy"
         auth {
             username = System.getenv("DOCKERHUB_USER")
             password = System.getenv("DOCKERHUB_PASSWORD")
@@ -131,22 +131,22 @@ jib {
         }
     }
     container {
-        jvmFlags = listOf("-Dspring.config.additional-location=optional:file:/config/application.yaml", "-Xms512m")
-        mainClass = "com.github.schaka.rarrnomore.RarrnomoreApplicationKt"
+        jvmFlags = listOf("-Dspring.config.additional-location=optional:file:/config/application.yaml", "-Xms256m")
+        mainClass = "com.github.schaka.janitorr.RarrnomoreApplicationKt"
         ports = listOf("8978")
         format = ImageFormat.Docker
         volumes = listOf("/config")
 
         labels.set(
-            mapOf(
-                "org.opencontainers.image.created" to "${project.extra["build.date"]}T${project.extra["build.time"]}",
-                "org.opencontainers.image.revision" to project.extra["build.revision"] as String,
-                "org.opencontainers.image.version" to project.version as String,
-                "org.opencontainers.image.title" to project.name,
-                "org.opencontainers.image.authors" to "Schaka <schaka@github.com>",
-                "org.opencontainers.image.source" to project.extra["docker.image.source"] as String,
-                "org.opencontainers.image.description" to project.description,
-            )
+                mapOf(
+                        "org.opencontainers.image.created" to "${project.extra["build.date"]}T${project.extra["build.time"]}",
+                        "org.opencontainers.image.revision" to project.extra["build.revision"] as String,
+                        "org.opencontainers.image.version" to project.version as String,
+                        "org.opencontainers.image.title" to project.name,
+                        "org.opencontainers.image.authors" to "Schaka <schaka@github.com>",
+                        "org.opencontainers.image.source" to project.extra["docker.image.source"] as String,
+                        "org.opencontainers.image.description" to project.description,
+                )
         )
 
 
