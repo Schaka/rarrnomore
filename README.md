@@ -6,18 +6,13 @@ Disclaimer: I am not responsible for you deleting any torrents. Please test your
 ### Notes
 - currently, only qBittorrent and Transmission are supported
 
-### Planned
-- some unit tests
-- (optional) other file types can be added to the exclusion list
-
 This application works by monitoring Radarr and Sonarr `Grab` requests through web hooks that you need to set up. 
 Once it receives a notification, it instantly connects to your torrent client, finds the torrent that was just added and checks its contents.
-If it finds a .rar or partial rar (.r01) file, it sends a request to your servarr application to delete this item from the queue and blocklist that torrent.
+If it finds a .rar or partial rar (.r01) file, it sends a request to your *arr application to delete this item from the queue and blocklist that torrent.
 If no rar is found, it sends a request to your torrent client to resume the torrent, starting the download.
 
 ## Setup
-Currently, the code is only published as a docker image to GitHub.
-If you cannot use Docker, you're out of luck for now.
+Currently, the code is only published as a docker image. If you cannot use Docker, you have to compile it yourself an [executable jar for Spring Boot](https://docs.spring.io/spring-boot/docs/current/reference/html/executable-jar.html).
 
 ### Setting up Docker
 - map /config from within the container to a host folder of your choice
