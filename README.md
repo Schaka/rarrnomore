@@ -38,18 +38,46 @@ docker run
 -v '/mnt/user/appdata/rarrnomore/config':'/config':'rw' 'ghcr.io/schaka/rarrnomore'
 ```
 
+An example of a `docker-compose.yml` may look like this:
+
+```yml
+services:
+  janitorr:
+    container_name: rarrnomore
+    image: ghcr.io/schaka/rarrnomore:latest
+    volumes:
+      - /appdata/janitorr/config:/config
+```
+
+A native image is also published for every tagged release. It keeps a much lower memory and CPU footprint and doesn't require longer runtimes to achieve optimal performance (JIT).
+If you restart more often than once a week or have a very low powered server, this is now recommended.
+That image is always tagged `:native`. To get a specific version, use `:native-v1.x.x`.
+It also requires you to map application.yml slightly differently - see below:
+
+```yml
+services:
+  janitorr:
+    container_name: janitorr
+    image: ghcr.io/schaka/rarrnomore:native
+    volumes:
+      - /appdata/rarrnomore/config/application.yml:/workspace/application.yml
+```
+
+To get the latest build as found in the development branch, grab the following image: `ghcr.io/schaka/rarrnomore:develop`.
+
 ### Setting up Unraid
 - Go to Docker, click "Add Container" at the bottom
 - enter image name 'schaka/rarrnomore'
 - Click "Add another Path, Port, Variable, Label or Device", choose Path
 - map Container Path `/config` to host path `/mnt/user/appdata/rarrnomore/config`
+- for native, map Container Path `/app/application.yml` to host path `/mnt/user/appdata/rarrnomore/config/application.yml`
 - map Container Port `8978` to host port `8978`
 
 It should look like this:
 
 ![unraid](docs/img/unraid.png)
 
-### Configuring your web hook
+## Configuring your web hook
 - open Sonarr/Radarr, go to Settings => Connect
 - click '+', choose Webhook, choose a name
 - only enable Notification trigger 'Grab'
