@@ -72,12 +72,12 @@ class HookController(
         }
 
         if (torrentClientProperties.type.servarrName != request.downloadClientType) {
-            log.warn("Client type doesn't match: {}", request)
+            log.warn("Client type doesn't match - expected: {} - request: {}", torrentClientProperties.type.servarrName, request)
             return false
         }
 
         if (torrentClientProperties.name != request.downloadClient) {
-            log.warn("Client name doesn't match: {}", request)
+            log.warn("Client name doesn't match - expected: {} - request: {}", torrentClientProperties.name, request)
             return false
         }
 
