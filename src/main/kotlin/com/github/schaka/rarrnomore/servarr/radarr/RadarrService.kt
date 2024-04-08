@@ -5,10 +5,12 @@ import com.github.schaka.rarrnomore.servarr.ServarrService
 import com.github.schaka.rarrnomore.servarr.TorrentNotInQueueException
 import com.github.schaka.rarrnomore.servarr.sonarr.SonarrService
 import org.slf4j.LoggerFactory
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 @Service
+@RegisterReflectionForBinding(classes = [RadarrQueueList::class, RadarrQueueItem::class])
 class RadarrService(
 
     @Radarr

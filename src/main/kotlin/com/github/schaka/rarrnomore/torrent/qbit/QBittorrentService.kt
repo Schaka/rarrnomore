@@ -4,6 +4,7 @@ import com.github.schaka.rarrnomore.hooks.TorrentInfo
 import com.github.schaka.rarrnomore.torrent.TorrentHashNotFoundException
 import com.github.schaka.rarrnomore.torrent.TorrentService
 import org.slf4j.LoggerFactory
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
@@ -12,6 +13,7 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 
 @ConditionalOnProperty("clients.torrent.type", havingValue = "QBITTORRENT")
+@RegisterReflectionForBinding(classes = [LinkedMultiValueMap::class, QbitFileResponse::class])
 @Service
 class QBittorrentService(
     @QBittorrent

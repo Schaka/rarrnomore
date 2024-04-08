@@ -12,13 +12,18 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 @Component
 class TorrentManager(
-    private val torrentService: TorrentService,
-    private val torrentClientProperties: TorrentClientProperties,
-    private val torrentQueue: MutableList<TorrentQueueItem> = CopyOnWriteArrayList()
+        private var torrentService: TorrentService,
+        private val torrentClientProperties: TorrentClientProperties,
+        private val torrentQueue: MutableList<TorrentQueueItem> = CopyOnWriteArrayList(),
+        torrentsServiceResolver: TorrentsServiceResolver,
 ) {
 
     companion object {
         private val log = LoggerFactory.getLogger(this::class.java.enclosingClass)
+    }
+
+    init {
+        torrentService = torrentsServiceResolver.resolve()
     }
 
     fun processGrab(torrentInfo: TorrentInfo, servarrService: ServarrService) {

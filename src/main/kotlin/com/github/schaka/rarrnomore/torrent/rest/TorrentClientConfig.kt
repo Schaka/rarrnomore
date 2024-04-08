@@ -2,6 +2,7 @@ package com.github.schaka.rarrnomore.torrent.rest
 
 import com.github.schaka.rarrnomore.torrent.qbit.QBittorrent
 import com.github.schaka.rarrnomore.torrent.qbit.QbitAuthInterceptor
+import com.github.schaka.rarrnomore.torrent.transmission.Transmission
 import com.github.schaka.rarrnomore.torrent.transmission.TransmissionAuthHandler
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.web.client.RestTemplateBuilder

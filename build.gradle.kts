@@ -3,6 +3,9 @@ import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import net.nemerosa.versioning.VersioningExtension
 import org.springframework.boot.gradle.dsl.SpringBootExtension
+import org.springframework.boot.gradle.tasks.aot.ProcessAot
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
+import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
 
@@ -31,7 +34,9 @@ dependencies {
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude(module = "mockito-core")
+    }
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
@@ -53,6 +58,10 @@ kotlin {
     }
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
 tasks.withType<JavaCompile> {
     sourceCompatibility = JavaVersion.VERSION_21.toString()
     targetCompatibility = JavaVersion.VERSION_21.toString()
@@ -63,10 +72,6 @@ tasks.withType<KotlinCompile> {
         freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = JavaVersion.VERSION_21.toString()
     }
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
 }
 
 configure<VersioningExtension> {
@@ -100,6 +105,36 @@ extra {
     project.extra["docker.image.version"] = branch
     project.extra["docker.image.source"] = build.projectSourceRoot()
     project.extra["docker.image.tags"] = containerImageTags
+
+}
+
+
+tasks.withType<BootRun> {
+    jvmArgs(
+            arrayOf(
+                    "-Dspring.config.additional-location=optional:file:/config/application.yaml"
+            )
+    )
+}
+
+tasks.withType<ProcessAot> {
+    args("-Dspring.config.additional-location=optional:file:/config/application.yaml")
+}
+
+tasks.withType<BootBuildImage> {
+
+    docker.publishRegistry.url = "ghcr.io"
+    docker.publishRegistry.username = System.getenv("USERNAME") ?: "INVALID_USER"
+    docker.publishRegistry.password = System.getenv("GITHUB_TOKEN") ?: "INVALID_PASSWORD"
+    // docker.publishRegistry.token = System.getenv("GITHUB_TOKEN") ?: "INVALID_TOKEN"
+
+    imageName = "ghcr.io/${project.extra["docker.image.name"]}:native"
+    version = project.extra["docker.image.version"] as String
+    createdDate = "now"
+    tags = listOf(
+            "ghcr.io/${project.extra["docker.image.name"]}:native",
+            "ghcr.io/${project.extra["docker.image.name"]}:native-${project.extra["docker.image.version"]}"
+    )
 
 }
 

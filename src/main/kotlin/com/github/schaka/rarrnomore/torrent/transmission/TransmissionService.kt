@@ -3,7 +3,8 @@ package com.github.schaka.rarrnomore.torrent.transmission
 import com.github.schaka.rarrnomore.hooks.TorrentInfo
 import com.github.schaka.rarrnomore.torrent.TorrentHashNotFoundException
 import com.github.schaka.rarrnomore.torrent.TorrentService
-import com.github.schaka.rarrnomore.torrent.rest.Transmission
+import com.github.schaka.rarrnomore.torrent.qbit.QbitFileResponse
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 @ConditionalOnProperty("clients.torrent.type", havingValue = "TRANSMISSION")
+@RegisterReflectionForBinding(classes = [TransmissionRequest::class, TransmissionResponse::class, TransmissionTorrentResponse::class])
 @Service
 class TransmissionService(
     @Transmission

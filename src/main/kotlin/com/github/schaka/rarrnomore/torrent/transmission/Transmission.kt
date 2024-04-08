@@ -1,4 +1,4 @@
-package com.github.schaka.rarrnomore.torrent.rest
+package com.github.schaka.rarrnomore.torrent.transmission
 
 import org.springframework.beans.factory.annotation.Qualifier
 
